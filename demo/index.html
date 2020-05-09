@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@1.5.4/dist/antd.min.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/less.js/3.11.1/less.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@1.5.4/dist/antd.min.js"></script>
+    <script src="../src/vue-component-loader.js"></script>
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    .btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+    }
+    .component {
+        height: 100vh;
+        width: 100vw;
+        display: grid;
+        justify-content: center;
+        align-content: center;
+        margin-top: -100px;
+    }
+</style>
+<body>
+    <div id="app">
+        <div class="component">
+            <component is="demo" v-if="showComp"></component>
+        </div>
+        <div class="btn">
+            <a-button @click="showComp = true" type="danger" size="small" icon="eye">show component</a-button>
+        </div>
+    </div>
+</body>
+<script>
+    (function() {
+        vueCmponentLoader.registerComponents([{
+            id:"demo",
+            baseDir:'./components/demo/',
+            style:'./components/demo/index.less',
+        }
+        ]).then(resp => {
+            let opt = {
+                data() {
+                    return {
+                        showComp:false,
+                    }
+                },
+                methods: {
+                    
+                },
+                components:{
+                    ...resp
+                },
+            }
+            new Vue(opt).$mount("#app")
+        })
+    })();
+</script>
+</html>
