@@ -1,6 +1,18 @@
 let vueComponentLoader = (function() {
     let loadedComponents = {}; // 保存已加载过的组件，方式重复加载
     let less = window.less || window.top.less || undefined;
+    function doLoadComponent(options) {
+        injectStyle(options.style); // 加载样式
+        return Promise.resolve($.get(options.template)).then(template => {
+            return new Promise(resolve => {
+                $.get(options.script).then(script => {
+                    let comConstr = eval(script); // 获取组件定义代码
+                    comConstr.template = template; // 整合组件html 模板
+                    resolve(comConstr);
+                })
+            })
+        });
+    }
     function loadComponent(opts) {
         let options = convertOptions(opts); // 转换配置
         if(loadedComponents[options.id]) { // 判断是否已经被加载
@@ -14,47 +26,23 @@ let vueComponentLoader = (function() {
                         id:options.id,
                         options:options,
                         constructor:function() {
-                            injectStyle(options.style); // 加载样式
-                            return Promise.resolve($.get(options.template)).then(template => {
-                                return new Promise(resolve => {
-                                    $.get(options.script).then(script => {
-                                        let comConstr = eval(script); // 获取组件定义代码
-                                        comConstr.template = template; // 整合组件html 模板
-                                        resolve(comConstr);
-                                    })
-                                })
-                            });
+                            return doLoadComponent(options);
                         }
                     }
                     loadedComponents[options.id] = res; // 保存当前组件加载结果
                     resolve(res);
-                });
+                }).catch(e => {});
             } else {
-                injectStyle(options.style);
                 return new Promise(resolve => {
-                    let compConstr = null;
-                    $.ajax({
-                        async:false,
-                        url:options.script,
-                        dataType:"script",
-                        success:(resp) => {
-                            compConstr = eval(resp);
+                    doLoadComponent(options).then(comConstr => {
+                        let res = {
+                            id:options.id,
+                            options:options,
+                            constructor:comConstr
                         }
+                        loadedComponents[options.id] = res; // 保存当前组件加载结果
+                        resolve(res);
                     })
-                    $.ajax({
-                        async:false,
-                        url:options.template,
-                        success:resp => {
-                            compConstr.template = resp;
-                        }
-                    }).catch(e => {})
-                    let res = {
-                        id:options.id,
-                        options:options,
-                        constructor:compConstr
-                    };
-                    loadedComponents[options.id] = res;
-                    resolve(res);
                 })
             }
         }
@@ -124,9 +112,7 @@ let vueComponentLoader = (function() {
         if(!options.script && options.baseDir) {
             options.script = `${options.baseDir}index.js`;
         }
-        if(options.async != false && !options.async) {
-            options.async = true;
-        } else {
+        if(options.async != false) {
             options.async = true;
         }
         options.id = options.id || options.name;
