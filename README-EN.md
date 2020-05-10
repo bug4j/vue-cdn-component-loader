@@ -24,8 +24,8 @@
 
 ```javascript
 {
-	style:String | Array<string>, // component's style , a style file url or an array of style urls
-	template:String, // component's html template file url
+	style:String | Array<string> | false, // component's style , a style file url or an array of style urls, if your component has no style script,set it false
+	template:String | false, // component's html template file url,if your component has no templete , or you choose to defeine template in script file or you are using a functional component, set it to false
 	script:String, // component's methods,data... definition script file url
 	baseDir:'./components/Demo/',// the work path of your component, if style url (or template url or script url) is not present in the config, it will use baseDir/index.css(or baseDir/index.html or baseDir/index.js) as fallback;
 }
@@ -52,8 +52,8 @@
     }
 })();
 ```
-- style: any correct css code or less code
-- template: any correct html code
+- style: any correct css code or less code, or false if your component has no style
+- template: any correct html code or false if your component has no template or your'd prefer to define template in the script or you are using render function.
 
 ###### usage
 ```javascript

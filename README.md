@@ -9,7 +9,7 @@
 
  1. 可以从服务器远程加载组件
  2. 可以异步加载组件
- 3. 支持less样式(需要映入less.js)
+ 3. 支持less样式(需要自行引入less.js)
 
 ### 依赖
 
@@ -25,8 +25,8 @@
 
 ```javascript
 {
-	style:String | Array<string>, // 组件的样式，支持单个样式文件路径，或者多个样式文件路径数据
-	template:String, // 组件html模板代码文件路径
+	style:String | Array<string> | false, // 组件的样式，支持单个样式文件路径，或者多个样式文件路径数据,如果组件没有单独的样式，设置为 false
+	template:String | false, // 组件html模板代码文件路径, 如果你的组件没有模板，或着 模板在 script 里面 或者使用函数式组件，设置为false
 	script:String, // 组件的methods,data,等等定义信息
 	baseDir:'./components/Demo/',// 组件代码的根目录，当style(或template或script) 没有配置时，默认会读取baseDir 下的 index.css(或 index.html 或 index.js)。
 }
@@ -49,8 +49,8 @@
     }
 })();
 ```
-- style 任意可运行的css代码或者less代码
-- template vue正常解析的html 片段
+- style 任意可运行的css代码或者less代码,没有单独样式设置为false
+- template vue正常解析的html 片段,没有template,或者在script中定义了template(配置了template属性，或者使用render函数)，设置为false
 
 ###### 用法
 ```javascript
