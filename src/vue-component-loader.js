@@ -3,15 +3,28 @@ let vueComponentLoader = (function() {
     let less = window.less || window.top.less || undefined;
     function doLoadComponent(options) {
         injectStyle(options.style); // 加载样式
-        return Promise.resolve($.get(options.template)).then(template => {
+        if(!options.template) {
             return new Promise(resolve => {
                 $.get(options.script).then(script => {
                     let comConstr = eval(script); // 获取组件定义代码
-                    comConstr.template = template; // 整合组件html 模板
                     resolve(comConstr);
                 })
             })
-        });
+        } else {
+            return Promise.resolve($.get(options.template)).then(template => {
+                return new Promise(resolve => {
+                    $.get(options.script).then(script => {
+                        let comConstr = eval(script); // 获取组件定义代码
+                        if(comConstr.constructor.name === 'Function') {
+                            comConstr.mixin({template:template});
+                        } else {
+                            comConstr.template = template; // 整合组件html 模板
+                        }
+                        resolve(comConstr);
+                    })
+                })
+            });
+        }
     }
     function loadComponent(opts) {
         let options = convertOptions(opts); // 转换配置
@@ -74,6 +87,7 @@ let vueComponentLoader = (function() {
     }
 
     function injectStyle(src) {
+        if(!src) return;
         if(src && src.constructor.name === "String") {
             $.get(src).then(resp => {
                 let style = document.createElement("style");
@@ -98,23 +112,29 @@ let vueComponentLoader = (function() {
     }
 
     function convertOptions(options) { 
+        
         if(options.baseDir) {
             if(options.baseDir.lastIndexOf("/") < (options.baseDir.length - 1)) {
                 options.baseDir = `${options.baseDir}/`;
             }
         }
-        if(!options.style && options.baseDir) {
+
+        if(options.style != false && !options.style && options.baseDir) {
             options.style = `${options.baseDir}index.css`;
         }
-        if(!options.template && options.baseDir) {
+        
+        if(options.template != false && !options.template && options.baseDir) {
             options.template = `${options.baseDir}index.html`;
-        }
+        } 
+
         if(!options.script && options.baseDir) {
             options.script = `${options.baseDir}index.js`;
         }
+
         if(options.async != false) {
             options.async = true;
         }
+
         options.id = options.id || options.name;
         return options;
      }
