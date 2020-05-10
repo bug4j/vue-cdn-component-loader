@@ -1,4 +1,4 @@
-let vueCmponentLoader = (function() {
+let vueComponentLoader = (function() {
     let loadedComponents = {}; // 保存已加载过的组件，方式重复加载
     let less = window.less || window.top.less || undefined;
     function loadComponent(opts) {

@@ -57,7 +57,7 @@
 
 ###### usage
 ```javascript
-vueCmponentLoader.registerComponents({
+vueComponentLoader.registerComponents({
     id:"test",
     baseDir:'./comps/',
 	style:'./comps/index.less',

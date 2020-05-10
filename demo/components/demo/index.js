@@ -10,5 +10,8 @@
                 this.$message.success("wow, it worked !")
             }
         },
+        mounted() {
+            this.$emit('mounted',this);
+        },
     }
 })();

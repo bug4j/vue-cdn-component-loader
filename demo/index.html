@@ -17,46 +17,52 @@
         margin: 0;
         padding: 0;
     }
-    .btn {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-    }
-    .component {
-        height: 100vh;
-        width: 100vw;
+
+    #app {
         display: grid;
         justify-content: center;
         align-content: center;
-        margin-top: -100px;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    #app > div {
+        margin-top: -15vh;
     }
 </style>
 <body>
     <div id="app">
-        <div class="component">
-            <component is="demo" v-if="showComp"></component>
-        </div>
-        <div class="btn">
-            <a-button @click="showComp = true" type="danger" size="small" icon="eye">show component</a-button>
-        </div>
+        <a-spin tip="加载中..." :spinning="loading">
+            <div class="component"  v-if="showComp">
+                <component is="demo" @mounted="componentMounted('demo')"></component>
+            </div>
+            <div class="btn" style="text-align: center;" v-else>
+                <a-button @click="showComp = true;loading = true" type="danger" size="large" icon="eye">show component</a-button>
+                <div class="title" style="padding: 12px 0;">
+                    press F12 to open <i style="margin: 0 12px;">browser development window -> network tab </i> to check async loading !
+                </div>
+            </div>
+        </a-spin>
     </div>
 </body>
 <script>
     (function() {
-        vueCmponentLoader.registerComponents([{
+        vueComponentLoader.registerComponents([{
             id:"demo",
             baseDir:'./components/demo/',
             style:'./components/demo/index.less',
-        }
-        ]).then(resp => {
+        }]).then(resp => {
             let opt = {
                 data() {
                     return {
                         showComp:false,
+                        loading:false,
                     }
                 },
                 methods: {
-                    
+                    componentMounted(componentName) {
+                        this.loading = false;
+                    }
                 },
                 components:{
                     ...resp
