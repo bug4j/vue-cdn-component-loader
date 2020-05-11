@@ -91,7 +91,7 @@ let vueComponentLoader = (function() {
         if(src && src.constructor.name === "String") {
             $.get(src).then(resp => {
                 let style = document.createElement("style");
-                if(/.*[\.less]\?*/.test(src)) {// less
+                if(src.endsWith('.less') || ((src.indexOf("?") - 5) == src.indexOf(".less"))) {// less
                     if(!less || !less.render) {
                         console.error("provided a less style script but less lib was not found!");
                         return;
