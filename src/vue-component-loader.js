@@ -1,3 +1,8 @@
+/**
+ * cdn vuejs 模块加载器
+ * @author bug4j
+ * @document https://github.com/bug4j/vue-cdn-component-loader
+ */
 let vueComponentLoader = (function() {
     let loadedComponents = {}; // 保存已加载过的组件，方式重复加载
     let less = window.less || window.top.less || undefined;
@@ -139,7 +144,35 @@ let vueComponentLoader = (function() {
         return options;
      }
 
+    function getConstructor(opt) {
+        if((opt.constructor.name === 'String' && loadedComponents[opt]) || (opt.constructor.name === 'Object' && loadedComponents[opt.id])) {
+            let id = opt.id || opt;
+            return function() {
+                return loadedComponents[id].constructor();
+            }
+        } else if(opt.constructor.name === 'Object' && !loadedComponents[opt.id]){
+            let options = convertOptions(opt);
+            let constr = function () {
+                return doLoadComponent(opt).then(constr => {
+                    let res = {
+                        id:options.id,
+                        options:options,
+                        constructor:constr
+                    }
+                    loadedComponents[options.id] = res; // 保存当前组件加载结果
+                    return new Promise(resolve => { resolve(constr); });
+                })
+            }
+            loadedComponents[options.id] = {
+                id:options.id,
+                options:options,
+                constructor:constr
+            }; 
+            return constr;
+        }
+    }
     return {
-        registerComponents:loadComponents
+        registerComponents:loadComponents,
+        getConstructor:getConstructor
     };
 })();

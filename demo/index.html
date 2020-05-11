@@ -34,7 +34,7 @@
     <div id="app">
         <a-spin tip="加载中..." :spinning="loading">
             <div class="component"  v-if="showComp">
-                <component is="demo" @mounted="componentMounted('demo')"></component>
+                <component :is="compId" @mounted="componentMounted('test')"></component>
             </div>
             <div class="btn" style="text-align: center;" v-else>
                 <a-button @click="showComp = true;loading = true" type="danger" size="large" icon="eye">show component</a-button>
@@ -51,13 +51,13 @@
             id:"demo",
             baseDir:'./components/demo/',
             style:'./components/demo/index.less',
-            template:false
         }]).then(resp => {
             let opt = {
                 data() {
                     return {
                         showComp:false,
                         loading:false,
+                        compId:'test'
                     }
                 },
                 methods: {
@@ -66,10 +66,15 @@
                     }
                 },
                 components:{
-                    ...resp
+                    ...resp,
+                    "test":vueComponentLoader.getConstructor({
+                        id:"demo",
+                        baseDir:'./components/demo/',
+                        style:'./components/demo/index.less',
+                    })
                 },
             }
-            new Vue(opt).$mount("#app")
+            window.app = new Vue(opt).$mount("#app")
         })
     })();
 </script>
