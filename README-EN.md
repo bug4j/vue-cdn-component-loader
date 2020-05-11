@@ -19,9 +19,14 @@
  - support any browser that support es6
 
 ### instruction
-
- - ###### congfigurations
-
+ 
+ - ###### api
+ ```javascript
+	vueComponentLoader.loadComponents(options):Promise<components:{id:constructor}>
+	vueComponentLoader.getConstructor(options | id):Promise<constructor>
+ ```
+ 
+ - ###### congfigurations(options)
 ```javascript
 {
 	style:String | Array<string> | false, // component's style , a style file url or an array of style urls, if your component has no style script,set it false
@@ -56,6 +61,7 @@
 - template: any correct html code or false if your component has no template or your'd prefer to define template in the script or you are using render function.
 
 ###### usage
+u can use like this:
 ```javascript
 vueComponentLoader.registerComponents({
     id:"test",
@@ -75,5 +81,23 @@ vueComponentLoader.registerComponents({
 			}
 		}
 	})
+})
+```
+or u can use it like this:
+```javascript
+new Vue({
+	el:"#app",
+	components:{
+			"demo":vueComponentLoader.getConstructor({
+				id:'demo',
+				baseDir:"./demo/"
+			})
+			// any other component definition
+		}
+	data:() => {
+		return {
+			// ...
+		}
+	}
 })
 ```

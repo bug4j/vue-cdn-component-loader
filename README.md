@@ -20,9 +20,12 @@
  - 支持任何支持ES6规范的浏览器
 
 ### 使用说明
-
- - ###### 配置
-
+ - ###### api
+ ```javascript
+	vueComponentLoader.loadComponents(options):Promise<components:{id:constructor}>
+	vueComponentLoader.getConstructor(options | id):Promise<constructor>
+ ```
+ - ###### 配置(options)
 ```javascript
 {
 	style:String | Array<string> | false, // 组件的样式，支持单个样式文件路径，或者多个样式文件路径数据,如果组件没有单独的样式，设置为 false
@@ -53,6 +56,7 @@
 - template vue正常解析的html 片段,没有template,或者在script中定义了template(配置了template属性，或者使用render函数)，设置为false
 
 ###### 用法
+ 你可以这样使用：
 ```javascript
 vueComponentLoader.registerComponents({
     id:"test",
@@ -71,5 +75,23 @@ vueComponentLoader.registerComponents({
 			}
 		}
 	})
+})
+```
+或者这样使用:
+```javascript
+new Vue({
+	el:"#app",
+	components:{
+			"demo":vueComponentLoader.getConstructor({
+				id:'demo',
+				baseDir:"./demo/"
+			})
+			// any other component definition
+		}
+	data:() => {
+		return {
+			// ...
+		}
+	}
 })
 ```
