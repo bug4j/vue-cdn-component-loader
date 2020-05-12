@@ -12,8 +12,8 @@
  3. 支持less样式(需要自行引入less.js)
 
 ### 依赖
-
- - jquery.ajax
+ - vuejs
+ - less.js (仅仅当你的组件使用less样式时)
 
 ### 浏览器支持
 
@@ -22,7 +22,7 @@
 ### 使用说明
  - ###### api
  ```javascript
-	vueComponentLoader.loadComponents(options):Promise<components:{id:constructor}>
+	vueComponentLoader.loadComponents(options | Array<options>):Promise<components:{id:constructor}>
 	vueComponentLoader.getConstructor(options | id):Promise<constructor>
  ```
  - ###### 配置(options)
@@ -66,8 +66,8 @@ vueComponentLoader.registerComponents({
 	new Vue({
 		el:"#app",
 		components:{
-			// 其他自定义组件
 			...comps
+			// 其他自定义组件
 		}
 		data:() => {
 			return {
@@ -86,7 +86,7 @@ new Vue({
 				id:'demo',
 				baseDir:"./demo/"
 			})
-			// any other component definition
+			// 其他自定义组件
 		}
 	data:() => {
 		return {

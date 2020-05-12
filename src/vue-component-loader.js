@@ -10,15 +10,15 @@ let vueComponentLoader = (function() {
         injectStyle(options.style); // 加载样式
         if(!options.template) {
             return new Promise(resolve => {
-                $.get(options.script).then(script => {
+                _ajax(options.script).then(script => {
                     let comConstr = eval(script); // 获取组件定义代码
                     resolve(comConstr);
                 })
             })
         } else {
-            return Promise.resolve($.get(options.template)).then(template => {
+            return _ajax(options.template).then(template => {
                 return new Promise(resolve => {
-                    $.get(options.script).then(script => {
+                    _ajax(options.script).then(script => {
                         let comConstr = eval(script); // 获取组件定义代码
                         if(comConstr.constructor.name === 'Function') {
                             comConstr.mixin({template:template});
@@ -94,7 +94,7 @@ let vueComponentLoader = (function() {
     function injectStyle(src) {
         if(!src) return;
         if(src && src.constructor.name === "String") {
-            $.get(src).then(resp => {
+            _ajax(src).then(resp => {
                 let style = document.createElement("style");
                 if(src.endsWith('.less') || ((src.indexOf("?") - 5) == src.indexOf(".less"))) {// less
                     if(!less || !less.render) {
@@ -170,6 +170,28 @@ let vueComponentLoader = (function() {
             }; 
             return constr;
         }
+    }
+
+    function _ajax(url,method) {
+        return new Promise((resolve, reject) => {
+            let req = new XMLHttpRequest();
+            req.open((method || "GET"),url,true);
+            req.onload = (e) => {
+                let xhr = e.target;
+                if(xhr.status === 200 || xhr.status === 304) {
+                    if(xhr.responseType.toLowerCase().indexOf('application/json') >= 0) {
+                        resolve(JSON.parse(xhr.responseText));
+                    } else {
+                        resolve(xhr.responseText);
+                    }
+                }
+            }
+            
+            req.ontimeout = (e) => { reject(e) };
+            req.onerror = (e) => { reject(e) };
+
+            req.send();
+        })
     }
     return {
         registerComponents:loadComponents,

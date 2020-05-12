@@ -10,8 +10,7 @@
  3. work fine with less style (require less.js)
 
 ### requirements
-
- - jquery.ajax
+ - vuejs
  - less (only when you component using less)
 
 ### Borwser support
@@ -22,7 +21,7 @@
  
  - ###### api
  ```javascript
-	vueComponentLoader.loadComponents(options):Promise<components:{id:constructor}>
+	vueComponentLoader.loadComponents(options | Array<options>):Promise<components:{id:constructor}>
 	vueComponentLoader.getConstructor(options | id):Promise<constructor>
  ```
  
@@ -58,7 +57,7 @@
 })();
 ```
 - style: any correct css code or less code, or false if your component has no style
-- template: any correct html code or false if your component has no template or your'd prefer to define template in the script or you are using render function.
+- template: any correct html code or false if your component has no template ,or you'd prefer to define template in the script, or you are using render function.
 
 ###### usage
 u can use like this:
@@ -67,13 +66,13 @@ vueComponentLoader.registerComponents({
     id:"test",
     baseDir:'./comps/',
 	style:'./comps/index.less',
-	async:false,// if you want your component load when using , remove this filed or set it to true
+	async:false,// if you want your component load when using it, remove this filed or set it to true
 }).then(comps => {
 	new Vue({
 		el:"#app",
 		components:{
 			...comps,
-			// any other component definition
+			// any other component declarations
 		}
 		data:() => {
 			return {
@@ -92,7 +91,7 @@ new Vue({
 				id:'demo',
 				baseDir:"./demo/"
 			})
-			// any other component definition
+			// any other component declarations
 		}
 	data:() => {
 		return {
