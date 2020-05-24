@@ -1,5 +1,6 @@
 (function() {
-    return Vue.component("aa",{
+    return Vue.extend({
+        // template:'<h1>{{ msg }}</h1>',
         data() {
             return {
                 msg:"hello world"

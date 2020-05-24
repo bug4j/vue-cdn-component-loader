@@ -1,6 +1,6 @@
 # a resolution to load remote component while using vue cdn js
 > make it possible to load a component from a remote location when using vue in cdn js model
-- [view demo](./demo/index.html)
+- [view demo](https://bug4j.github.io/vue-cdn-component-loader/demo/index.html)
 - [中文文档](README.md)
 
 ### features

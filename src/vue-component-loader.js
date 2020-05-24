@@ -8,28 +8,23 @@ let vueComponentLoader = (function() {
     let less = window.less || window.top.less || undefined;
     function doLoadComponent(options) {
         injectStyle(options.style); // 加载样式
-        if(!options.template) {
-            return new Promise(resolve => {
-                _ajax(options.script).then(script => {
-                    let comConstr = eval(script); // 获取组件定义代码
-                    resolve(comConstr);
-                })
+        let templatePromise = options.template ? _ajax(options.template) : new Promise(resolve => {resolve(`<template></template>`)});
+        return templatePromise.then(template => {
+            template = template || `<template></template>`;
+            return _ajax(options.script).then(script => {
+                let comConstr = eval(script); // 获取组件定义代码
+                // 整合组件html 模板
+                if(comConstr.constructor.name === 'Function') {
+                    if(comConstr.extendOptions && comConstr.mixin) {
+                        let t = !!options.template ? template : (comConstr.extendOptions.template || template);
+                        comConstr.mixin({template:t});
+                    }
+                } else {
+                    comConstr.template = !!options.template ? template : (comConstr.template || template); 
+                }
+                return new Promise(resolve => {resolve(comConstr);})
             })
-        } else {
-            return _ajax(options.template).then(template => {
-                return new Promise(resolve => {
-                    _ajax(options.script).then(script => {
-                        let comConstr = eval(script); // 获取组件定义代码
-                        if(comConstr.constructor.name === 'Function') {
-                            comConstr.mixin({template:template});
-                        } else {
-                            comConstr.template = template; // 整合组件html 模板
-                        }
-                        resolve(comConstr);
-                    })
-                })
-            });
-        }
+        })
     }
     function loadComponent(opts) {
         let options = convertOptions(opts); // 转换配置
