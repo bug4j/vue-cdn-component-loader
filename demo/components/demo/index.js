@@ -1,5 +1,5 @@
 (function() {
-    return Vue.extend({
+    return {
         // template:'<h1>{{ msg }}</h1>',
         data() {
             return {
@@ -14,5 +14,5 @@
         mounted() {
             this.$emit('mounted',this);
         }
-    })
+    }
 })();

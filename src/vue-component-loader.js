@@ -142,9 +142,7 @@ let vueComponentLoader = (function() {
     function getConstructor(opt) {
         if((opt.constructor.name === 'String' && loadedComponents[opt]) || (opt.constructor.name === 'Object' && loadedComponents[opt.id])) {
             let id = opt.id || opt;
-            return function() {
-                return loadedComponents[id].constructor();
-            }
+            return loadedComponents[id].constructor;
         } else if(opt.constructor.name === 'Object' && !loadedComponents[opt.id]){
             let options = convertOptions(opt);
             let constr = function () {
