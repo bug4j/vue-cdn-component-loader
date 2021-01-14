@@ -2,7 +2,7 @@
 > vue很好用，组件开发大大提高了前端码农的工作效率，vue-cli结合webpack开发vue更是让前端程序员如虎添翼，但是有时候有不能使用webpack + cli(比如你碰上了一个NC的boss...)，那就只能使用cdn全量引入vue了。这自然加大了组件化开发的难度，而且一旦组件数量过多，index.html的内容就会变得过于臃肿，加载速度也没有保证。
 
 > 为了解决上述问题，利用vue组件机制，开发了这么个cdn下远程组件加载库。
-- [查看演示](./demo/index.html)
+- [查看演示](https://bug4j.github.io/vue-cdn-component-loader/demo/index.html)
 - [English doc](README-EN.md)
 
 ### 特点
