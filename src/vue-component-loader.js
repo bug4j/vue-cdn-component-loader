@@ -6,15 +6,16 @@
 let vueComponentLoader = (function() {
     let loadedComponents = {}; // 保存已加载过的组件，方式重复加载
     let less = window.less || window.top.less || undefined;
+    let isVue3 = false;
     function doLoadComponent(options) {
         injectStyle(options.style); // 加载样式
-        let templatePromise = options.template ? _ajax(options.template) : new Promise(resolve => {resolve(`<template></template>`)});
+        let templatePromise = options.template ? _ajax(options.template) : Promise.resolve(`<template></template>`);
         return templatePromise.then(template => {
             template = template || `<template></template>`;
             return _ajax(options.script).then(script => {
                 let comConstr = eval(script); // 获取组件定义代码
                 // 整合组件html 模板
-                if(comConstr.constructor.name === 'Function') {
+                if(Object.prototype.toString.call(comConstr) === '[object Function]') {
                     if(comConstr.extendOptions && comConstr.mixin) {
                         let t = !!options.template ? template : (comConstr.extendOptions.template || template);
                         comConstr.mixin({template:t});
@@ -22,29 +23,26 @@ let vueComponentLoader = (function() {
                 } else {
                     comConstr.template = !!options.template ? template : (comConstr.template || template); 
                 }
-                return new Promise(resolve => {resolve(comConstr);})
+                return Promise.resolve(comConstr);
             })
         })
     }
     function loadComponent(opts) {
         let options = convertOptions(opts); // 转换配置
         if(loadedComponents[options.id]) { // 判断是否已经被加载
-            return new Promise(resolve => {
-                resolve(loadedComponents[options.id]); // 已经被加载，直接返回
-            })
+            return isVue3 ? loadedComponents[options.id] : Promise.resolve(loadedComponents[options.id]);
         } else {
             if(options.async) { // 异步组件
-                return new Promise(resolve => {
+                let p = new Promise(resolve => {
                     let res = {
                         id:options.id,
                         options:options,
-                        constructor:function() {
-                            return doLoadComponent(options);
-                        }
+                        constructor: isVue3 ? Vue.defineAsyncComponent(() => doLoadComponent(options)) : () => doLoadComponent(options)
                     }
                     loadedComponents[options.id] = res; // 保存当前组件加载结果
                     resolve(res);
-                }).catch(e => {});
+                });
+                return p;
             } else {
                 return new Promise(resolve => {
                     doLoadComponent(options).then(comConstr => {
@@ -64,12 +62,8 @@ let vueComponentLoader = (function() {
     function loadComponents(options) {
         if(options) {
             let p = undefined;
-            if(options.constructor.name === 'Array') {
-                let pros = [];
-                options.forEach(opt => {
-                    pros.push(loadComponent(opt));
-                })
-                p = Promise.all(pros);
+            if(Object.prototype.toString.call(options) === '[object Array]') {
+                p = Promise.all(options.map(opt => loadComponent(opt)));
             } else {
                 p = Promise.all([loadComponent(options)]);
             }
@@ -79,10 +73,10 @@ let vueComponentLoader = (function() {
                     comp.constructor.name = comp.id || comp.name;
                     res[comp.id] = comp.constructor;
                 })
-                return new Promise(resolve => {resolve(res)});
+                return Promise.resolve(res);
             })
         } else {
-            return Promise.all(new Promise(resolve => {resolve()}));
+            return Promise.resolve([]);
         }
     }
 
@@ -106,7 +100,7 @@ let vueComponentLoader = (function() {
                     document.head.append(style);
                 }
             })
-        } else if(src && src.constructor.name === "Array"){
+        } else if(src && Object.prototype.toString.call(src) === "[object Array]"){
             src.forEach(s => injectStyle(s));
         }
     }
@@ -140,10 +134,10 @@ let vueComponentLoader = (function() {
      }
 
     function getConstructor(opt) {
-        if((opt.constructor.name === 'String' && loadedComponents[opt]) || (opt.constructor.name === 'Object' && loadedComponents[opt.id])) {
+        if((Object.prototype.toString.call(opt) === '[object String]' && loadedComponents[opt]) || (Object.prototype.toString.call(opt) === '[object Object]' && loadedComponents[opt.id])) {
             let id = opt.id || opt;
             return loadedComponents[id].constructor;
-        } else if(opt.constructor.name === 'Object' && !loadedComponents[opt.id]){
+        } else if(Object.prototype.toString.call(opt) === '[object Object]' && !loadedComponents[opt.id]){
             let options = convertOptions(opt);
             let constr = function () {
                 return doLoadComponent(opt).then(constr => {
@@ -153,7 +147,7 @@ let vueComponentLoader = (function() {
                         constructor:constr
                     }
                     loadedComponents[options.id] = res; // 保存当前组件加载结果
-                    return new Promise(resolve => { resolve(constr); });
+                    return Promise.resolve(constr);
                 })
             }
             loadedComponents[options.id] = {
@@ -186,6 +180,10 @@ let vueComponentLoader = (function() {
             req.send();
         })
     }
+    function prepare() {
+        if(Vue.version.charAt(0) > 2) isVue3 = true;
+    }
+    prepare();
     return {
         registerComponents:loadComponents,
         getConstructor:getConstructor

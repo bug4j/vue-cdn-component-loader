@@ -8,7 +8,6 @@
         },
         methods: {
             foo() {
-                this.$message.success("wow, it worked !")
             }
         },
         mounted() {
