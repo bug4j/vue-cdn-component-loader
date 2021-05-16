@@ -22,8 +22,8 @@
 ### 使用说明
  - ###### api
  ```javascript
-	vueComponentLoader.loadComponents(options | Array<options>):Promise<components:{id:constructor}>
-	vueComponentLoader.getConstructor(options | id):Promise<constructor>
+	vueComponentLoader.getAll(options | Array<options>):Promise<components:{id:constructor}>
+	vueComponentLoader.get(options | id):Promise<constructor>
  ```
  - ###### 配置(options)
 ```javascript
@@ -58,7 +58,7 @@
 ###### 用法
  你可以这样使用：
 ```javascript
-vueComponentLoader.registerComponents({
+vueComponentLoader.getAll({
     id:"test",
     baseDir:'./comps/',
     style:'./comps/index.less',
@@ -82,7 +82,7 @@ vueComponentLoader.registerComponents({
 new Vue({
 	el:"#app",
 	components:{
-			"demo":vueComponentLoader.getConstructor({
+			"demo":vueComponentLoader.get({
 				id:'demo',
 				baseDir:"./demo/"
 			})
