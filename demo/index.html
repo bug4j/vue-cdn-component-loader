@@ -5,77 +5,167 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@1.5.4/dist/antd.min.css">
+    <link rel="stylesheet" href="/demo/highlight/styles/atom-one-dark.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/less.js/3.11.1/less.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.13.0/beautify.js"></script>
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.13.0/beautify-css.js"></script>
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.13.0/beautify-html.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue-router/3.5.1/vue-router.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@1.5.4/dist/antd.min.js"></script>
     <script src="../src/vue-component-loader.js"></script>
-    <title>Document</title>
+    <script src="/demo/highlight/highlight.pack.js"></script>
+    <title>bug4j - vue component loader demo page for Vue2</title>
 </head>
 <style>
     * {
         margin: 0;
         padding: 0;
     }
-
     #app {
-        display: grid;
-        justify-content: center;
-        align-content: center;
         height: 100vh;
         width: 100vw;
     }
+    .page-content {
+        display: grid;
+        justify-content: center;
+        align-content: center;
+        justify-items: center;
+        align-items: center;        
+        grid-template-columns: 1fr 480px;
+        height: 100%;
+        width: 100%;
+    }
 
-    #app > div {
-        margin-top: -15vh;
+    .page-content > div {
+        height: 100vh;
+        width: 100%;
+        display: grid;
+        align-items: center;
+    }
+    .code-wrapper {
+        display: grid;
+        grid-template-rows: 1fr;
+        height: 100%;
+        width: 100%;
+    }
+    .code-area.html {
+        height: calc(100% / 3);
+    }
+    .code-area {
+        width: 100%;
+    }
+    pre {
+        height: 100%;
+    }
+    .code-area {
+        position: relative;
+        height: 100%;
+    }
+    .code-area::after {
+        content: attr(data-lang);
+        display: inline-block;
+        position: absolute;
+        right: 12px;
+        top: 6px;
+        color: #999;
+        cursor: pointer;
     }
 </style>
 <body>
     <div id="app">
-        <a-spin tip="加载中..." :spinning="loading">
-            <div class="component"  v-if="showComp">
-                <component :is="compId" @mounted="componentMounted('test')"></component>
-            </div>
-            <div class="btn" style="text-align: center;" v-else>
-                <a-button @click="showComp = true;loading = true" type="danger" size="large" icon="eye">show component</a-button>
-                <div class="title" style="padding: 12px 0;">
-                    press F12 to open <i style="margin: 0 12px;">browser development window -> network tab </i> to check async loading !
+        <loading @hook:mounted="loaded" :loading="loading">
+            <div class="page-content">
+                <div class="area-section content-area" style="text-align: center;margin-top: -16%;">
+                    <div class="component" v-if="showComp">
+                        <component :is="compId" @hook:mounted="loading = false"></component>
+                    </div>
+                    <div style="text-align: center;" v-else>
+                        <a-button @click="showComp = true;loading = true" type="danger" size="large" icon="eye">show component</a-button>
+                        <div class="title" style="padding: 12px 0;">
+                            press F12 to open <i style="margin: 0 12px;">browser development window -> network tab </i> to check async loading !
+                        </div>
+                    </div>
+                </div>
+                <div class="code-wrapper">
+                    <div class="code-area script"  data-lang="javascript">
+                        <pre class="code lang-javascript" v-show="!showComp">
+                            const HelloWorld = vueComponentLoader.get({
+                                id:"hello-world",
+                                baseDir:'./components/HelloWorld/',
+                                style:'./components/HelloWorld/index.less',
+                                async:false,
+                            });
+                            vueComponentLoader.getAll([{
+                                id:"demo",
+                                baseDir:'./components/demo/',
+                                style:'./components/demo/index.less',
+                            }]).then(function(resp) {
+                                let opt = {
+                                    router,
+                                    data() {
+                                        return {
+                                            showComp:false,
+                                            loading:false,
+                                            compId:'hello-world'
+                                        }
+                                    },
+                                    methods: {
+                                    },
+                                    components:{
+                                        'hello-world': HelloWorld,
+                                        ...resp,
+                                    },
+                                }
+                                window.app = new Vue(opt).$mount("#app")
+                            })
+                        </pre>
+                        <pre class="code lang-javascript" v-show="showComp">
+                            const routes = [{
+                                path:'/router-home',
+                                name:'home',
+                                component: vueComponentLoader.get({
+                                    id:"/router-home",
+                                    baseDir:'./components/home/',
+                                    style:'./components/home/index.less',
+                                })
+                            },{
+                                path:'/router-demo',
+                                name:'router-demo',
+                                component: vueComponentLoader.get({
+                                    id:"router-demo",
+                                    baseDir:'./components/router-demo/',
+                                    style:'./components/router-demo/index.less',
+                                })
+                            }];
+                            const router = new VueRouter( { routes } );
+                            new Vue({ router }).$mount("#app")
+                        </pre>
+                    </div>
+                    <div class="code-area html"></div>
+                    <div class="code-area style"></div>
                 </div>
             </div>
-        </a-spin>
+        </loading>
     </div>
 </body>
+<script src="./consts.js"></script>
 <script>
     (function() {
-        vueComponentLoader.registerComponents([{
-            id:"demo",
-            baseDir:'./components/demo/',
-            style:'./components/demo/index.less',
-            async:false
-        }]).then(resp => {
-            let opt = {
-                data() {
-                    return {
-                        showComp:false,
-                        loading:false,
-                        compId:'demo'
-                    }
-                },
-                methods: {
-                    componentMounted(componentName) {
-                        this.loading = false;
-                    }
-                },
-                components:{
-                    ...resp,
-                    "test":vueComponentLoader.getConstructor({
-                        id:"demo",
-                        baseDir:'./components/demo/',
-                        style:'./components/demo/index.less',
-                    })
-                },
-            }
-            window.app = new Vue(opt).$mount("#app")
+        const router = new VueRouter( { routes } );
+        vueComponentLoader.getAll([{
+            id:"hello-world",
+            baseDir:'./components/HelloWorld/',
+            style:'./components/HelloWorld/index.less',
+        }]).then(function(resp) {
+            options.components = { ...options.components, ...resp }
+            options.router = router;
+            window.app = new Vue(options).$mount("#app")
         })
     })();
+    
+</script>
+<script>
+    
 </script>
 </html>

@@ -1,5 +1,8 @@
 <div class="demo-component">
     <div class="title">async component</div>
     <p style="margin-bottom: 12px;">this component was loaded asyncly via xhr </p>
-    <button type="button" class="btn btn-primary" @click="foo"><i class="fas fa-eye"></i>&nbsp;&nbsp; {{ msg }}</button>
+    <a-button type="primary" size='large' @click="foo">
+        <a-icon type="smile-outlined" slot="icon"></a-icon>
+        {{ msg }}
+    </a-button>
 </div>

@@ -1,0 +1,95 @@
+.loading-component {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    .loading-mask,.loading-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+    }
+    .loading-mask {
+        background: ~"rgb(224 224 224 / 85%)";
+    }
+    .loading-wrapper {
+        z-index: 100;
+    }
+    .loading {
+        @color:#fe4f51;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        float: left;
+        transition: all 250ms linear;
+        display: grid;
+        justify-content: center;
+        align-content: center;
+        .loading-title {
+            color: #737373;
+            font-variant: all-small-caps;
+            margin-top: 12px;
+        }
+        .la-timer {
+            display: block;
+            font-size: 0;
+            color: #fff;
+            position: relative;
+            box-sizing: border-box;
+            margin: 0 auto;
+            &.la-2x {
+                width: 64px;
+                height: 64px;
+                &>div {
+                    width: 64px;
+                    height: 64px;
+                    border: 4px solid @color;
+                    background: transparent;
+                    border-radius: 100%;
+                    display: inline-block;
+                    float: none;
+                    box-sizing: border-box;
+                    position: relative;
+                    &:before {
+                        height: 24px;
+                    }
+                    &:after {
+                        height: 16px;
+                        animation-delay: -1.5s!important;
+                        animation-duration: 8s!important;
+                    }
+                    &:before,&:after {
+                        position: absolute;
+                        top: 28px;
+                        left: 28px;
+                        width: 4px;
+                        margin-top: -2px;
+                        margin-left: -2px;
+                        border-radius: 4px;
+                        content: "";
+                        background: @color;
+                        animation: timer-loader 1250ms infinite linear;
+                        animation-delay: -625ms;
+                        transform-origin: 2px 2px 0;
+                    }
+                }
+            }
+        }
+    }
+    @keyframes timer-loader {
+        0% {
+            -webkit-transform: rotate(0deg);
+            -moz-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg)
+        }
+    
+        100% {
+            -webkit-transform: rotate(360deg);
+            -moz-transform: rotate(360deg);
+            -o-transform: rotate(360deg);
+            transform: rotate(360deg)
+        }
+    }
+}

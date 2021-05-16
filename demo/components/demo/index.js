@@ -3,7 +3,7 @@
         // template:'<h1>{{ msg }}</h1>',
         data() {
             return {
-                msg:"hello world"
+                msg:"hello world ~"
             }
         },
         methods: {
