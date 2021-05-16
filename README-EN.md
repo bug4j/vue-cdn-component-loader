@@ -21,8 +21,8 @@
  
  - ###### api
  ```javascript
-	vueComponentLoader.loadComponents(options | Array<options>):Promise<components:{id:constructor}>
-	vueComponentLoader.getConstructor(options | id):Promise<constructor>
+	vueComponentLoader.getAll(options | Array<options>):Promise<components:{id:constructor}>
+	vueComponentLoader.get(options | id):Promise<constructor>
  ```
  
  - ###### congfigurations(options)
@@ -62,7 +62,7 @@
 ###### usage
 u can use like this:
 ```javascript
-vueComponentLoader.registerComponents({
+vueComponentLoader.getAll({
     id:"test",
     baseDir:'./comps/',
 	style:'./comps/index.less',
@@ -87,7 +87,7 @@ or u can use it like this:
 new Vue({
 	el:"#app",
 	components:{
-			"demo":vueComponentLoader.getConstructor({
+			"demo":vueComponentLoader.get({
 				id:'demo',
 				baseDir:"./demo/"
 			})
