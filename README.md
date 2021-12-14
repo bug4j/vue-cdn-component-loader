@@ -3,14 +3,19 @@
 
 > 为了解决上述问题，利用vue组件机制，开发了这么个cdn下远程组件加载库。
 - [查看Vue2演示](https://bug4j.github.io/vue-cdn-component-loader/demo/index.html)
-- - [查看Vue3演示](https://bug4j.github.io/vue-cdn-component-loader/demo/index-v3.html)
+- [查看Vue3演示](https://bug4j.github.io/vue-cdn-component-loader/demo/index-v3.html)
 - [English doc](README-EN.md)
 
 ### 特点
 
  1. 可以从服务器远程加载组件
+
  2. 可以异步加载组件
+
  3. 支持less样式(需要自行引入less.js)
+
+### 缺陷
+暂不支持 vue3 Composition Api
 
 ### 依赖
  - vuejs
@@ -36,13 +41,14 @@
 }
 ```
 - ###### 组件开发规范
-	- js 要求代码执行后返回一个vue组件构造函数（详情参考[vue组件开发文档](https://cn.vuejs.org/v2/guide/components-registration.html)）例如：
+  js 要求代码执行后返回一个vue组件构造函数，或者一个options对象，或者一个能resolve前面两者的promise（详情参考[vue组件开发文档](https://cn.vuejs.org/v2/guide/components-registration.html)）例如：
 ```javascript
-(function() {
+(async function() {
+    const { default: { message:msg } } = await import('/module.js');
     return {
         data() {
             return {
-                msg:'测试'
+                msg
             }
         },
         methods: {
